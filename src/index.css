@@ -2,21 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  background-color: #fff;
-  width: 100%;
-  max-width: 1080px;
-  margin: 0 auto;
-  font-family: sans-serif;
-  font-size: 16px;
-}
-
-button {
-  cursor: pointer;
+    background-color: #1d1d1d;
 }
