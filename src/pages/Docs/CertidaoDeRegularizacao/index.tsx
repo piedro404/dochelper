@@ -1,17 +1,28 @@
-import React, { useState, useEffect } from "react";
-import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
-import "@cyntler/react-doc-viewer/dist/index.css";
+import React, { useState, FormEvent } from "react";
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { saveAs } from "file-saver";
 
+const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-');
+    const formattedDay = day.padStart(2, '0');
+    const formattedMonth = month.padStart(2, '0');
+    
+    return `${formattedDay}/${formattedMonth}/${year}`;
+};
+
 const generateModifiedDoc = (formData, templateUrl) => {
+    const updatedFormData = {
+        ...formData,
+        data: formatDate(formData.data)
+    };
+
     return fetch(templateUrl)
         .then(response => response.arrayBuffer())
         .then(content => {
             const zip = new PizZip(content);
             const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-            doc.setData(formData);
+            doc.setData(updatedFormData);
             doc.render();
             return doc.getZip().generate({ type: "blob" });
         });
@@ -19,7 +30,7 @@ const generateModifiedDoc = (formData, templateUrl) => {
 
 export function CertidaoDeRegularizacao() {
     const [formData, setFormData] = useState({
-        number: 0,
+        number: "",
         profile: "",
         nucleo: "",
         rua: "",
@@ -38,43 +49,34 @@ export function CertidaoDeRegularizacao() {
         assinatura: "",
     });
 
-    const [previewPDF, setPreviewPDF] = useState([
-        { uri: "./doc-models/certidao-de-regularizacao.pdf", fileType: "pdf" },
-    ]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            generateModifiedDoc(formData, "./doc-models/certidao-de-regularizacao.docx")
-                .then(blob => {
-                    setPreviewPDF(URL.createObjectURL(blob));
-                })
-                .catch(error => console.error("Erro ao gerar documento:", error));
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, [formData]);
-
     const handleChange = (e) => {
         const { name, value } = e.target;
-        const newValue = name === "assinatura" ? value.toUpperCase() : value;
+        const newValue = value;
+        if(name === "assinatura") {
+            const newValue = value.toUpperCase();
+        }
         setFormData({
             ...formData,
             [name]: newValue,
         });
     };
 
-    const handleDownload = () => {
+    const handleDownload = (e: FormEvent) => {
+        e.preventDefault();
+
         generateModifiedDoc(formData, "./doc-models/certidao-de-regularizacao.docx")
             .then(blob => saveAs(blob, `certidao-de-regularizacao-${formData.number}_${formData.assinatura}.docx`))
             .catch(error => console.error("Erro ao baixar documento:", error));
     };
+
     return (
         <section className="flex flex-1 flex-col gap-4 p-4 w-full">
             <section className="bg-gray-100">
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 gap-x-16 gap-y-8 lg:grid-cols-5">
-                        <div className="rounded-lg bg-white p-8 shadow-lg lg:col-span-3 lg:p-12">
-                            <form action="#" className="space-y-4">
+                    <div className="grid grid-cols-1 gap-x-16 gap-y-8">
+                        <div className="rounded-lg bg-white p-8 shadow-lg lg:p-12">
+                            <h1 className="text-center text-2xl pb-4">Certidao De Regularizacao.docx</h1>
+                            <form onSubmit={handleDownload} className="space-y-4">
                                 <div>
                                     <label htmlFor="number">
                                         Numero do Processo º
@@ -177,7 +179,7 @@ export function CertidaoDeRegularizacao() {
                                             className="w-full rounded-lg border-gray-200 p-3 text-sm"
                                             required
                                             placeholder="Ex: 7,00 m"
-                                            type="number"
+                                            type="text"
                                             name="perimetro1"
                                             id="perimetro1"
                                             value={formData.perimetro1}
@@ -212,7 +214,7 @@ export function CertidaoDeRegularizacao() {
                                             className="w-full rounded-lg border-gray-200 p-3 text-sm"
                                             required
                                             placeholder="Ex: 7,00 m"
-                                            type="number"
+                                            type="text"
                                             name="perimetro2"
                                             id="perimetro2"
                                             value={formData.perimetro2}
@@ -247,7 +249,7 @@ export function CertidaoDeRegularizacao() {
                                             className="w-full rounded-lg border-gray-200 p-3 text-sm"
                                             required
                                             placeholder="Ex: 7,00 m"
-                                            type="number"
+                                            type="text"
                                             name="perimetro3"
                                             id="perimetro3"
                                             value={formData.perimetro3}
@@ -282,7 +284,7 @@ export function CertidaoDeRegularizacao() {
                                             className="w-full rounded-lg border-gray-200 p-3 text-sm"
                                             required
                                             placeholder="Ex: 7,00 m"
-                                            type="number"
+                                            type="text"
                                             name="perimetro4"
                                             id="perimetro4"
                                             value={formData.perimetro4}
@@ -360,18 +362,11 @@ export function CertidaoDeRegularizacao() {
                                     <button
                                         type="submit"
                                         className="inline-block w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-white"
-                                        onClick={handleDownload}
                                     >
                                         Baixar
                                     </button>
                                 </div>
                             </form>
-                        </div>
-                        <div className="lg:col-span-2 lg:py-12">
-                        <DocViewer
-                                pluginRenderers={DocViewerRenderers}
-                                documents={previewPDF}
-                            />
                         </div>
                     </div>
                 </div>

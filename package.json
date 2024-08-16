@@ -13,6 +13,7 @@
     "@cyntler/react-doc-viewer": "^1.16.6",
     "docxtemplater": "^3.49.2",
     "file-saver": "^2.0.5",
+    "pdf-lib": "^1.17.1",
     "pizzip": "^3.1.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
