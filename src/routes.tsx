@@ -15,7 +15,7 @@ const router = createBrowserRouter([
             {
                 path: "/certidao-de-regularizacao",
                 element: <CertidaoDeRegularizacao />
-            }
+            },
         ]
     }
 ])
