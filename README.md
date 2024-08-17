@@ -1,50 +1,74 @@
-# React + TypeScript + Vite
+# 📄 DocHelper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+DocHelper é uma aplicação que ajuda a automatizar o preenchimento de documentos. Desenvolvida com React, essa ferramenta permite que você insira dados personalizados em modelos de documentos e os gere automaticamente, otimizando suas tarefas de produtividade.
 
-Currently, two official plugins are available:
+## 📚 Tabela de Conteúdos
+- [📖 Visão Geral](#-visão-geral)
+- [🛠 Tecnologias](#-tecnologias)
+- [⚙️ Configuração](#%EF%B8%8F-configuração)
+  - [📋 Pré-requisitos](#-pré-requisitos)
+  - [⬇️ Instalação](#%EF%B8%8F-instalação)
+  - [🚀 Executando Localmente](#-executando-localmente)
+- [🎨 Usando o DocHelper](#-usando-o-dochelper)
+- [📒 Sobre](#-sobre)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📖 Visão Geral
 
-## Expanding the ESLint configuration
+DocHelper simplifica o processo de preenchimento de documentos, permitindo que os usuários insiram dados personalizados em modelos predefinidos e gerem documentos formatados de maneira rápida e eficiente. Ideal para quem precisa lidar com documentos repetitivos ou formulários.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 🛠 Tecnologias
 
-- Configure the top-level `parserOptions` property like this:
+- **React**: Biblioteca JavaScript para construção de interfaces de usuário.
+- **Tailwind CSS**: Framework CSS utilitário para estilização rápida e responsiva.
+- **Docxtemplater**: Biblioteca para geração de documentos Word dinâmicos.
+- **PDF-lib**: Biblioteca para manipulação de arquivos PDF.
+- **File-saver**: Utilitário para salvar arquivos no lado do cliente.
+- **Pizzip**: Biblioteca para manipulação de arquivos ZIP, essencial para trabalhar com documentos Office.
+- **Vite**: Ferramenta de build rápida para projetos web.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## ⚙️ Configuração
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### 📋 Pré-requisitos
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- Node.js
+- npm ou yarn
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### ⬇️ Instalação
+
+1. **Clone o repositório:**
+    ```bash
+    git clone https://github.com/seuusuario/dochelper.git
+    cd dochelper
+    ```
+
+2. **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+
+3. **Configuração de ambiente:**
+    - Não é necessária configuração adicional. Apenas execute o servidor local.
+
+### 🚀 Executando Localmente
+
+1. **Inicie o servidor de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+2. **Acesse a aplicação em `http://localhost:3000`.**
+
+## 🎨 Usando o DocHelper
+
+1. **Preencha os Campos:**
+   - Na página principal, preencha os campos necessários para o documento.
+   
+2. **Gere o Documento:**
+   - Clique no botão para gerar o documento preenchido. O arquivo será gerado e pronto para ser baixado.
+
+3. **Baixe e Utilize:**
+   - O documento gerado pode ser salvo diretamente no seu dispositivo.
+
+## 📒 Sobre
+
+Obrigado por utilizar o DocHelper! Se você tiver dúvidas, sugestões ou encontrar algum problema, entre em contato através de pedro.henrique.martins404@gmail.com.
