@@ -2,39 +2,174 @@ import React, { useState, FormEvent } from "react";
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
 import { saveAs } from "file-saver";
+import InputMask from "react-input-mask";
 
-const formatDate = (dateString: any) => {
-    const [year, month, day] = dateString.split('-');
-    const formattedDay = day.padStart(2, '0');
-    const formattedMonth = month.padStart(2, '0');
-    
+const daysInText = [
+    "PRIMEIRO",
+    "SEGUNDO",
+    "TERCEIRO",
+    "QUARTO",
+    "QUINTO",
+    "SEXTO",
+    "SÉTIMO",
+    "OITAVO",
+    "NONO",
+    "DÉCIMO",
+    "DÉCIMO PRIMEIRO",
+    "DÉCIMO SEGUNDO",
+    "DÉCIMO TERCEIRO",
+    "DÉCIMO QUARTO",
+    "DÉCIMO QUINTO",
+    "DÉCIMO SEXTO",
+    "DÉCIMO SÉTIMO",
+    "DÉCIMO OITAVO",
+    "DÉCIMO NONO",
+    "VIGÉSIMO",
+    "VIGÉSIMO PRIMEIRO",
+    "VIGÉSIMO SEGUNDO",
+    "VIGÉSIMO TERCEIRO",
+    "VIGÉSIMO QUARTO",
+    "VIGÉSIMO QUINTO",
+    "VIGÉSIMO SEXTO",
+    "VIGÉSIMO SÉTIMO",
+    "VIGÉSIMO OITAVO",
+    "VIGÉSIMO NONO",
+    "TRIGÉSIMO",
+    "TRIGÉSIMO PRIMEIRO",
+];
+
+const monthsInText = [
+    "JANEIRO",
+    "FEVEREIRO",
+    "MARÇO",
+    "ABRIL",
+    "MAIO",
+    "JUNHO",
+    "JULHO",
+    "AGOSTO",
+    "SETEMBRO",
+    "OUTUBRO",
+    "NOVEMBRO",
+    "DEZEMBRO",
+];
+
+const convertYearToText = (year: any) => {
+    const units = [
+        "",
+        "UM",
+        "DOIS",
+        "TRÊS",
+        "QUATRO",
+        "CINCO",
+        "SEIS",
+        "SETE",
+        "OITO",
+        "NOVE",
+    ];
+    const tens = [
+        "",
+        "DEZ",
+        "VINTE",
+        "TRINTA",
+        "QUARENTA",
+        "CINQUENTA",
+        "SESSENTA",
+        "SETENTA",
+        "OITENTA",
+        "NOVENTA",
+    ];
+    const hundreds = [
+        "",
+        "CEM",
+        "DUZENTOS",
+        "TREZENTOS",
+        "QUATROCENTOS",
+        "QUINHENTOS",
+        "SEISCENTOS",
+        "SETECENTOS",
+        "OITOCENTOS",
+        "NOVECENTOS",
+    ];
+    const thousands = ["", "MIL", "DOIS MIL"];
+
+    const yearStr = year.toString();
+    const thousandPart = thousands[parseInt(yearStr[0])];
+    const hundredPart = hundreds[parseInt(yearStr[1])];
+    const tenPart = tens[parseInt(yearStr[2])];
+    const unitPart = units[parseInt(yearStr[3])];
+
+    var yearInText = `${thousandPart}`;
+    if (hundredPart) yearInText += ` E ${hundredPart}`;
+    if (tenPart || unitPart) yearInText += ` E ${tenPart} ${unitPart}`;
+
+    return yearInText;
+};
+
+const dataInInt = (dateString: any) => {
+    const data = dateString.split("-");
+
+    return [parseInt(data[0]), parseInt(data[1]), parseInt(data[2])]
+}
+
+const formatDate = (dateString: any, monthAdd: any = 0) => {
+    var [year, month, day] = dataInInt(dateString);
+    month += monthAdd;
+    const formattedDay = day.toString().padStart(2, "0");
+    const formattedMonth = month.toString().padStart(2, "0");
+
     return `${formattedDay}/${formattedMonth}/${year}`;
+};
+
+const formatDateText = (dateString: any) => {
+    var [year, month, day] = dataInInt(dateString);
+    const formattedDay = day.toString().padStart(2, "0");
+
+    return `${formattedDay} de ${monthsInText[month]} de ${year}`;
+};
+
+const formatDateTextDialogo = (dateString: any) => {
+    var [year, month, day] = dataInInt(dateString);
+
+    return `Ao ${daysInText[day - 1]} dia do mês de ${
+        monthsInText[month]
+    } do ano de ${convertYearToText(year)}`;
 };
 
 const generateModifiedDoc = (formData: any, templateUrl: any) => {
     const updatedFormData = {
         ...formData,
-        data: formatDate(formData.data)
+        data: formatDateText(formData.data),
+        dataEmissao: formatDate(formData.dataEmissao),
+        dataPorExtenso: formatDateTextDialogo(formData.data),
+        dataVencimento: formatDate(formData.dataEmissao, 1),
     };
 
     return fetch(templateUrl)
-        .then(response => response.arrayBuffer())
-        .then(content => {
+        .then((response) => response.arrayBuffer())
+        .then((content) => {
             const zip = new PizZip(content);
-            const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+            const doc = new Docxtemplater(zip, {
+                paragraphLoop: true,
+                linebreaks: true,
+            });
             doc.setData(updatedFormData);
             doc.render();
             return doc.getZip().generate({ type: "blob" });
         });
 };
 
-export function CertidaoDeRegularizacao() {
+export function REURB_E() {
     const [formData, setFormData] = useState({
-        number: "",
         profile: "",
-        nucleo: "",
+        descricaoPerimetro: "",
+        data: "",
+        assinatura: "",
+        cpf: "",
+        localizacao: "",
+        dataEmissao: "",
+        statusCertidao: "",
+        number: "",
         rua: "",
-        bairro: "",
         referencia1: "",
         perimetro1: "",
         referencia2: "",
@@ -45,14 +180,12 @@ export function CertidaoDeRegularizacao() {
         perimetro4: "",
         areaTotal: "",
         perimetroTotal: "",
-        data: "",
-        assinatura: "",
     });
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
         var newValue = value;
-        if (name === "assinatura") {
+        if (name === "assinatura" || name === "statusCertidao") {
             newValue = value.toUpperCase();
         }
         setFormData({
@@ -64,9 +197,16 @@ export function CertidaoDeRegularizacao() {
     const handleDownload = (e: FormEvent) => {
         e.preventDefault();
 
-        generateModifiedDoc(formData, "./doc-models/certidao-de-regularizacao.docx")
-            .then(blob => saveAs(blob, `certidao-de-regularizacao-${formData.data}_${formData.assinatura}.docx`))
-            .catch(error => console.error("Erro ao baixar documento:", error));
+        generateModifiedDoc(formData, "./doc-models/reurb_e.docx")
+            .then((blob) =>
+                saveAs(
+                    blob,
+                    `reurb_e-${formData.data}_${formData.assinatura}.docx`
+                )
+            )
+            .catch((error) =>
+                console.error("Erro ao baixar documento:", error)
+            );
     };
 
     return (
@@ -75,8 +215,143 @@ export function CertidaoDeRegularizacao() {
                 <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 gap-x-16 gap-y-8">
                         <div className="rounded-lg bg-white p-8 shadow-lg lg:p-12">
-                            <h1 className="text-center text-2xl pb-4">Certidao De Regularizacao.docx</h1>
-                            <form onSubmit={handleDownload} className="space-y-4">
+                            <h1 className="text-center text-2xl pb-4">
+                                REURB'E.docx
+                            </h1>
+                            <form
+                                onSubmit={handleDownload}
+                                className="space-y-4"
+                            >
+                                <div>
+                                    <label htmlFor="profile">
+                                        Perfil Apresentado
+                                    </label>
+                                    <textarea
+                                        className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                        required
+                                        placeholder="Ex: Pedro Henrique Martins Borges, brasileiro, maior, solteiro, portador do CPF: n° 123.456.789-10 e RG: n° 543212345678-9, residente e domiciliada na José do Egito, n° 62, Bairro Centro, nesta cidade"
+                                        rows={3}
+                                        name="profile"
+                                        id="profile"
+                                        value={formData.profile}
+                                        onChange={handleChange}
+                                    ></textarea>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="descricaoPerimetro">
+                                        Descrição do Perimetro
+                                    </label>
+                                    <textarea
+                                        className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                        required
+                                        placeholder="Ex: 177,10 m² (cento e setenta e sete metros e dez centímetros quadrados), perímetro total de 64,60 m (sessenta e quanto metros e sessenta centímetros), sendo: 7,00 m (sete metros), de frente para Rua 5 de Setembro; com 25,30 m (vinte e cinco metros e trinta centímetros) do lado direito, limitando – se com Maria de Lourdes Ferreira da Silva; 25,30 m (vinte e cinco metros e trinta centímetros) do lado esquerdo, limitando – se com Edinar Pereira Barros e Valdson Rodrigues Lima; e 7,00 m (sete metros) na linha de fundos, limitando – se com Cristiane Alves de Brito"
+                                        rows={5}
+                                        name="descricaoPerimetro"
+                                        id="descricaoPerimetro"
+                                        value={formData.descricaoPerimetro}
+                                        onChange={handleChange}
+                                    ></textarea>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                    <div>
+                                        <label htmlFor="cpf">CPF</label>
+                                        <InputMask
+                                            mask="999.999.999-99"
+                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                            required
+                                            placeholder="Ex: 000.000.000-00"
+                                            type="text"
+                                            name="cpf"
+                                            id="cpf"
+                                            value={formData.cpf}
+                                            onChange={handleChange}
+                                        ></InputMask>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="dataEmissao">
+                                            Data de Emissão
+                                        </label>
+
+                                        <input
+                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                            required
+                                            type="date"
+                                            id="dataEmissao"
+                                            name="dataEmissao"
+                                            value={formData.dataEmissao}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="data">Data</label>
+
+                                        <input
+                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                            required
+                                            type="date"
+                                            id="data"
+                                            name="data"
+                                            value={formData.data}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label htmlFor="localizacao">
+                                            Localização
+                                        </label>
+                                        <input
+                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                            required
+                                            placeholder="Ex: Rua 5 de Setembro, s/n, Bairro Conceição"
+                                            type="text"
+                                            name="localizacao"
+                                            id="localizacao"
+                                            value={formData.localizacao}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="statusCertidao">
+                                            Status do Certificado
+                                        </label>
+
+                                        <input
+                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                            required
+                                            type="text"
+                                            placeholder="NEGATIVA"
+                                            name="statusCertidao"
+                                            id="statusCertidao"
+                                            value={formData.statusCertidao}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="assinatura">
+                                        Assinatura
+                                    </label>
+
+                                    <input
+                                        className="w-full rounded-lg border-gray-200 p-3 text-sm"
+                                        required
+                                        placeholder="Ex: PEDRO HENRIQUE MARTINS BORGES"
+                                        type="text"
+                                        name="assinatura"
+                                        value={formData.assinatura}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
                                 <div>
                                     <label htmlFor="number">
                                         Numero do Processo º
@@ -94,63 +369,17 @@ export function CertidaoDeRegularizacao() {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="profile">
-                                        Perfil Apresentado
-                                    </label>
-                                    <textarea
+                                    <label htmlFor="rua">Rua</label>
+                                    <input
                                         className="w-full rounded-lg border-gray-200 p-3 text-sm"
                                         required
-                                        placeholder="Ex: Pedro Henrique Martins Borges, brasileiro, maior, solteiro, portador do CPF: n° 123.456.789-10 e RG: n° 543212345678-9, residente e domiciliada na José do Egito, n° 62, Bairro Centro, nesta cidade"
-                                        rows={3}
-                                        name="profile"
-                                        id="profile"
-                                        value={formData.profile}
+                                        placeholder="Ex: 5 de Setembro"
+                                        type="text"
+                                        name="rua"
+                                        id="rua"
+                                        value={formData.rua}
                                         onChange={handleChange}
-                                    ></textarea>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                                    <div>
-                                        <label htmlFor="nucleo">Núcleo</label>
-                                        <input
-                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                            required
-                                            placeholder="Ex: Conceição"
-                                            type="text"
-                                            name="nucleo"
-                                            id="nucleo"
-                                            value={formData.nucleo}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="rua">Rua</label>
-                                        <input
-                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                            required
-                                            placeholder="Ex: 5 de Setembro"
-                                            type="text"
-                                            name="rua"
-                                            id="rua"
-                                            value={formData.rua}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="bairro">Bairro</label>
-                                        <input
-                                            className="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                            required
-                                            placeholder="Ex: Centro"
-                                            type="text"
-                                            name="bairro"
-                                            id="bairro"
-                                            value={formData.bairro}
-                                            onChange={handleChange}
-                                        />
-                                    </div>
+                                    />
                                 </div>
 
                                 <h3 className="text-center">Ponto 1</h3>
@@ -326,36 +555,6 @@ export function CertidaoDeRegularizacao() {
                                             onChange={handleChange}
                                         />
                                     </div>
-                                </div>
-
-                                <div>
-                                    <label htmlFor="data">Data</label>
-
-                                    <input
-                                        className="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                        required
-                                        type="date"
-                                        id="data"
-                                        name="data"
-                                        value={formData.data}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="assinatura">
-                                        Assinatura
-                                    </label>
-
-                                    <input
-                                        className="w-full rounded-lg border-gray-200 p-3 text-sm"
-                                        required
-                                        placeholder="Ex: PEDRO HENRIQUE MARTINS BORGES"
-                                        type="text"
-                                        name="assinatura"
-                                        value={formData.assinatura}
-                                        onChange={handleChange}
-                                    />
                                 </div>
 
                                 <div className="mt-4">
