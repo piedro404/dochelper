@@ -124,7 +124,7 @@ const formatDateText = (dateString: any) => {
     var [year, month, day] = dataInInt(dateString);
     const formattedDay = day.toString().padStart(2, "0");
 
-    return `${formattedDay} de ${monthsInText[month]} de ${year}`;
+    return `${formattedDay} de ${monthsInText[month-1]} de ${year}`;
 };
 
 const formatDateTextDialogo = (dateString: any) => {
