@@ -382,7 +382,7 @@ export function REURB_E() {
                                     />
                                 </div>
 
-                                <h3 className="text-center">Ponto 1</h3>
+                                <h3 className="text-center">Ponto 1 - Frente</h3>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label htmlFor="referencia1">
@@ -417,7 +417,7 @@ export function REURB_E() {
                                     </div>
                                 </div>
 
-                                <h3 className="text-center">Ponto 2</h3>
+                                <h3 className="text-center">Ponto 2 - Direita</h3>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label htmlFor="referencia2">
@@ -452,7 +452,7 @@ export function REURB_E() {
                                     </div>
                                 </div>
 
-                                <h3 className="text-center">Ponto 3</h3>
+                                <h3 className="text-center">Ponto 3 - Fundo</h3>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label htmlFor="referencia3">
@@ -487,7 +487,7 @@ export function REURB_E() {
                                     </div>
                                 </div>
 
-                                <h3 className="text-center">Ponto 4</h3>
+                                <h3 className="text-center">Ponto 4 - Esquerda</h3>
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                     <div>
                                         <label htmlFor="referencia4">
